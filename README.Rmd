@@ -1,10 +1,10 @@
 ---
-  output: github_document
+output: github_document
 ---
 
-  <!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 
-  ```{r, include = FALSE}
+```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -13,26 +13,29 @@ knitr::opts_chunk$set(
   echo=TRUE
 )
 ```
+
 ---
-  date: `r format(Sys.Date(), "%d/%m/%Y")`
+date: `r format(Sys.Date(), "%d/%m/%Y")`
 ---
 ---
-  title: "Introduction to rtreefit"
+title: "Introduction to rtreefit"
 output: rmarkdown::html_vignette
 description: >
   Introduction to how to fit ultrametric trees using rtreefit.
 vignette: >
   %\VignetteIndexEntry{Introduction to rtreefit}
-%\VignetteEngine{knitr::rmarkdown}
-\usepackage[utf8]{inputenc}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
 ---
 
 ## Installation
+<!-- badges: start -->
+<!-- badges: end -->
 
 You can install rtreefit like so:
 
 ``` r
-devtools::install_github("NickWilliamsSanger/rtreefit",build_vignettes=TRUE)
+devtools::install_github("nangalialab/rtreefit",build_vignettes=TRUE)
 ```
 
 ```{r setup, include=FALSE}
