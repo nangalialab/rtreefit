@@ -7,7 +7,7 @@ using namespace Rcpp ;
 RCPP_MODULE(stan_fit4nb_tree_mod) {
 
 
-    class_<rstan::stan_fit<stan_model, boost::random::ecuyer1988> >("model_nb_tree")
+    class_<rstan::stan_fit<stan_model, boost::random::ecuyer1988> >("rstantools_model_nb_tree")
 
     .constructor<SEXP,SEXP,SEXP>()
 

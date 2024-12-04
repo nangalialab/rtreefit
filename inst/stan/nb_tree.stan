@@ -111,14 +111,20 @@ data{
   int  idxcrossover[NLAMBDA-1];
   real lambda_est;
   real early_growth_model_on;
+  vector[NLAMBDA-1] lb_xover;
+  vector[NLAMBDA-1] ub_xover;
 }
 
 parameters {
   real<lower=0.0001,upper=0.9999> x[NINT];
   //vector<lower=0.001,upper=0.999>[N] S;
   vector<lower=1,upper=200>[NLAMBDA] lambda;
-  real<lower=0,upper=1> x0[NLAMBDA-1]; //fractional crossover..
   real<lower=0> k;  //nb 1/overdispersion
+  vector<lower=0.00001,upper=0.99999>[NLAMBDA-1] x0_raw; //fractional crossover..
+}
+
+transformed parameters {
+  vector[NLAMBDA-1] x0 = lb_xover + (ub_xover-lb_xover) .* x0_raw;
 }
 
 model {
@@ -132,7 +138,7 @@ model {
   //real t0=0.0;
   x ~ beta(concentration .* q ./ (1-q),concentration);
   //S ~ beta(100,100*(1-s) ./ s);
-  x0 ~ uniform(0,1);
+  //x0 ~ uniform(0,1);
   k ~ normal(0,1);
   for(i in 1:(NLAMBDA-1)){
     x0v[idxcrossover[i]]=x0[i];
