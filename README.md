@@ -1,6 +1,6 @@
 Introduction to rtreefit
 ================
-04/12/2024
+29/01/2025
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -60,12 +60,12 @@ $$ t_j=x_j  \text{min}({T_k:k \in D(j)}) $$
 
 For other interior edges, $i$, we have
 
-$$ t_i=\left(\text{min}\left\{{T_k:k \in D(i)}\right\}-\sum_{j\in A(i)} t_j\right)x_i $$
+$$ t_i=\left(\text{min}\left(T_k:k \in D(i)\right) -\sum_{j\in A(i)} t_j\right)x_i $$
 
 The duration of the terminal edges is fixed by the values of $t_i$ on
 the interior edges and the overall duration constraint:
 
-$$ t_i=\text{min}\left\{{T_k:k \in D(i)}\right\}-\sum_{j\in A(i)} t_j $$
+$$ t_i=\text{min}\left(T_k:k \in D(i)\right)-\sum_{j\in A(i)} t_j $$
 
 We assume that there are $p-1$ change points in the tree corresponding
 to the acquisition of driver mutations. This results in $p$ mutation
@@ -109,7 +109,8 @@ $$x_i \sim \text{Beta}(\alpha=p_i/(1-\sum_{j\in A(i)}p_j),\beta=1)$$
 
 where the $p_i$ is an initial approximation of the duration of the
 branch length expressed as a fraction of the sampling time:
-$$p_i=\text{min}_{j\in D(i)}\left\{(m_j+1)/(\sum_{k\in A(j)}\left(m_k+1\right))\right\}$$
+
+$$ p_i=\text{min}\left(j\in D(i)\right) \frac{m_j+1}{\Sigma_{k\in A(j)}(m_k+1)} $$
 
 Note that the overdispersion parameter is rescaled so that it is
 comparable across branches with different mutation burden.
@@ -163,7 +164,7 @@ testing=run_neutral_sim(0.1,1/365,nyears=NYEARS)
 #> n_sim_days: 9125
 #> b_stop_if_empty: 0
 #> b_stop_at_pop_size: 0
-#> maxt: 118.212056529841
+#> maxt: 158.164823897412
 #> driver_rate_per_cell_per_day: 0
 #> max_driver_count: -1
 #> nmigration: 0
@@ -192,22 +193,22 @@ plot_tree(st)
     res=fit_tree(tree=st,switch_nodes = c(),xcross = c(),niter = 10000,model = "poisson_tree",early_growth_model_on = 0.0)
     #> Warning in fit_tree(tree = st, switch_nodes = c(), xcross = c(), niter = 10000,
     #> : No sensitivity supplied: assuming 99%
-    #> Median lambda estimate=17.58
+    #> Median lambda estimate=18.02
     print(res$lambda)
     #> $mean
-    #> [1] 18.01814
+    #> [1] 18.16738
     #> 
     #> $sd
-    #> [1] 0.1634386
+    #> [1] 0.166991
     #> 
     #> $lb
-    #> [1] 17.70501
+    #> [1] 17.84365
     #> 
     #> $ub
-    #> [1] 18.34354
+    #> [1] 18.50194
     #> 
     #> $median
-    #> [1] 18.01642
+    #> [1] 18.16628
     par(mfcol=c(1,2))
     ut=get_elapsed_time_tree(st)
     ut$edge.length=ut$edge.length/365
@@ -251,7 +252,7 @@ selsim=run_selection_sim(0.1,1/365,target_pop_size = 1e5,nyears_driver_acquisiti
 #> n_sim_days: 3650
 #> b_stop_if_empty: 0
 #> b_stop_at_pop_size: 0
-#> maxt: 169.042183678927
+#> maxt: 110.011292493931
 #> driver_rate_per_cell_per_day: 0
 #> max_driver_count: -1
 #> nmigration: 0
@@ -260,59 +261,45 @@ selsim=run_selection_sim(0.1,1/365,target_pop_size = 1e5,nyears_driver_acquisiti
 #> No driver found: tries= 0 
 #>    population val fitness id driver1
 #> 1           1   0     0.0  0       0
-#> 2       99999   1     0.0  0       0
+#> 2      100009   1     0.0  0       0
 #> 21          1   1     0.3  1       1
 #> n_sim_days: 15330
 #> b_stop_if_empty: 1
 #> b_stop_at_pop_size: 0
-#> maxt: 3650.00049793029
+#> maxt: 3650.00179412198
 #> driver_rate_per_cell_per_day: 0
 #> max_driver_count: -1
 #> nmigration: 0
 #> MAX_EVENTS= 15330000 
-#> MAX_SIZE= 310003 
+#> MAX_SIZE= 310033 
 #> No driver found: tries= 1 
 #>    population val fitness id driver1
 #> 1           1   0     0.0  0       0
-#> 2       99999   1     0.0  0       0
+#> 2      100009   1     0.0  0       0
 #> 21          1   1     0.3  1       1
 #> n_sim_days: 15330
 #> b_stop_if_empty: 1
 #> b_stop_at_pop_size: 0
-#> maxt: 3650.00049793029
+#> maxt: 3650.00179412198
 #> driver_rate_per_cell_per_day: 0
 #> max_driver_count: -1
 #> nmigration: 0
 #> MAX_EVENTS= 15330000 
-#> MAX_SIZE= 310003 
+#> MAX_SIZE= 310033 
 #> No driver found: tries= 2 
 #>    population val fitness id driver1
 #> 1           1   0     0.0  0       0
-#> 2       99999   1     0.0  0       0
+#> 2      100009   1     0.0  0       0
 #> 21          1   1     0.3  1       1
 #> n_sim_days: 15330
 #> b_stop_if_empty: 1
 #> b_stop_at_pop_size: 0
-#> maxt: 3650.00049793029
+#> maxt: 3650.00179412198
 #> driver_rate_per_cell_per_day: 0
 #> max_driver_count: -1
 #> nmigration: 0
 #> MAX_EVENTS= 15330000 
-#> MAX_SIZE= 310003 
-#> No driver found: tries= 3 
-#>    population val fitness id driver1
-#> 1           1   0     0.0  0       0
-#> 2       99999   1     0.0  0       0
-#> 21          1   1     0.3  1       1
-#> n_sim_days: 15330
-#> b_stop_if_empty: 1
-#> b_stop_at_pop_size: 0
-#> maxt: 3650.00049793029
-#> driver_rate_per_cell_per_day: 0
-#> max_driver_count: -1
-#> nmigration: 0
-#> MAX_EVENTS= 15330000 
-#> MAX_SIZE= 310003
+#> MAX_SIZE= 310033
 st=get_subsampled_tree(selsim,30)
 #> Starting checking the validity of tmp...
 #> Found number of tips: n = 31 
@@ -324,27 +311,27 @@ node=st$events$node[which(st$events$driverid==1)]
 res=fit_tree(tree=st,switch_nodes = node,xcross = c(-1),niter = 10000,model = "poisson_tree",early_growth_model_on = 0.0)
 #> Warning in fit_tree(tree = st, switch_nodes = node, xcross = c(-1), niter =
 #> 10000, : No sensitivity supplied: assuming 99%
-#> Median lambda estimate=20.06
+#> Median lambda estimate=20.44
 print(res$lambda)
 #> $mean
 #> lambda[1] lambda[2] 
-#>  20.23155  19.91747 
+#>  20.44269  20.64339 
 #> 
 #> $sd
 #> lambda[1] lambda[2] 
-#>  0.160120  0.547255 
+#> 0.1433005 0.6399483 
 #> 
 #> $lb
 #> lambda[1] lambda[2] 
-#>  19.92053  18.86730 
+#>  20.16755  19.42434 
 #> 
 #> $ub
 #> lambda[1] lambda[2] 
-#>  20.55325  21.00503 
+#>  20.72615  21.93099 
 #> 
 #> $median
 #> lambda[1] lambda[2] 
-#>  20.23031  19.90664
+#>  20.44195  20.63704
 ut=get_elapsed_time_tree(st)
 ut$edge.length=ut$edge.length/365
 par(mfcol=c(1,2))
@@ -400,7 +387,7 @@ node=muttrunk
 res=fit_tree(tree=st,switch_nodes = node,xcross = c(-1),niter = 10000,model = "poisson_tree",early_growth_model_on = 0.0)
 #> Warning in fit_tree(tree = st, switch_nodes = node, xcross = c(-1), niter =
 #> 10000, : No sensitivity supplied: assuming 99%
-#> Median lambda estimate=20.54
+#> Median lambda estimate=20.08
 ut=get_elapsed_time_tree(st)
 ut$edge.length=ut$edge.length/365
 par(mfcol=c(1,2),oma=c(1,1,3,1))
@@ -429,7 +416,7 @@ mtext("Uniform prior on trunk",outer = TRUE,line=1)
 res=fit_tree(tree=st,switch_nodes = node,xcross = c(0.999),niter = 10000,model = "poisson_tree",early_growth_model_on = 0.0)
 #> Warning in fit_tree(tree = st, switch_nodes = node, xcross = c(0.999), niter =
 #> 10000, : No sensitivity supplied: assuming 99%
-#> Median lambda estimate=20.54
+#> Median lambda estimate=20.08
 ut=get_elapsed_time_tree(st)
 ut$edge.length=ut$edge.length/365
 par(mfcol=c(1,2),oma=c(1,1,3,1))

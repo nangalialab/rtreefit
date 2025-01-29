@@ -72,12 +72,12 @@ We incorporate this constraint by performing the optimisation over the interior 
 
 For other interior edges, $i$, we have
 
-\[ t_i=\left(\text{min}\left\{{T_k:k \in D(i)}\right\}-\sum_{j\in A(i)} t_j\right)x_i \]
+\[ t_i=\left(\text{min}\left(T_k:k \in D(i)\right) -\sum_{j\in A(i)} t_j\right)x_i \]
 
 
 The duration of the terminal edges is fixed by the values of $t_i$  on the interior edges and the overall duration constraint:
 
-  \[ t_i=\text{min}\left\{{T_k:k \in D(i)}\right\}-\sum_{j\in A(i)} t_j \]
+  \[ t_i=\text{min}\left(T_k:k \in D(i)\right)-\sum_{j\in A(i)} t_j \]
 
 We assume that there are $p-1$ change points in the tree corresponding to the acquisition of driver mutations.  This results in $p$ mutation rates $\lambda_j$ applying throughout the tree where we allow at most one change point per branch and the initial ancestral (or wild type) rate is  $\lambda_0$ and additional rate change points occur a fraction $\alpha_j$ along branch $j$ and descendent branches have the rate $\lambda_j$ unless there are additional change points in descendant branches.  The effective rate on branches with a change point going from $\lambda_l$ to  $\lambda_j$ is just the weighted average $\alpha_j \lambda_l+(1-\alpha_j)\lambda_j$ where we use a uniform unit interval prior for the $\alpha$'s.
 
@@ -100,7 +100,8 @@ with priors $1/\phi \sim \text{HalfNormal}(0,10)$, $\lambda \sim \mathcal{N}(\La
 \[x_i \sim \text{Beta}(\alpha=p_i/(1-\sum_{j\in A(i)}p_j),\beta=1)\]
 
 where the $p_i$ is an initial approximation of the duration of the branch length expressed as a fraction of the sampling time:
-\[p_i=\text{min}_{j\in D(i)}\left\{(m_j+1)/(\sum_{k\in A(j)}\left(m_k+1\right))\right\}\]
+
+\[ p_i=\text{min}\left(j\in D(i)\right) \frac{m_j+1}{\Sigma_{k\in A(j)}(m_k+1)} \]
 
 Note that the overdispersion parameter is rescaled so that it is comparable across branches with different mutation burden.
 
@@ -114,8 +115,7 @@ where
 
 \[ S_i \sim \text{Beta}\left(\alpha=c,\beta=c(1-s_i)/s_i\right)\]
 
-Where we have chosen the concentration parameter $c=100$. This reflects only modest uncertainty in our estimates in sensitivity and also allows the model to mitigate larger than expected variability in the branch lengths. In other respects the priors are the same as for the Negative Binomial Model.
-
+Where we have chosen the concentration parameter $c=100$. This reflects only modest uncertainty in our estimates in sensitivity and also allows the model to mitigate larger than expected variability in the branch lengths. In other respects the priors are the same as for the Negative Binomial Model.  
 
 ### Examples
 
