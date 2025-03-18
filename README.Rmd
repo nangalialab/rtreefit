@@ -72,12 +72,12 @@ We incorporate this constraint by performing the optimisation over the interior 
 
 For other interior edges, $i$, we have
 
-\[ t_i=\left(\text{min}\left\{{T_k:k \in D(i)}\right\}-\sum_{j\in A(i)} t_j\right)x_i \]
+\[ t_i=\left(\text{min}\left(T_k:k \in D(i)\right) -\sum_{j\in A(i)} t_j\right)x_i \]
 
 
 The duration of the terminal edges is fixed by the values of $t_i$  on the interior edges and the overall duration constraint:
 
-  \[ t_i=\text{min}\left\{{T_k:k \in D(i)}\right\}-\sum_{j\in A(i)} t_j \]
+  \[ t_i=\text{min}\left(T_k:k \in D(i)\right)-\sum_{j\in A(i)} t_j \]
 
 We assume that there are $p-1$ change points in the tree corresponding to the acquisition of driver mutations.  This results in $p$ mutation rates $\lambda_j$ applying throughout the tree where we allow at most one change point per branch and the initial ancestral (or wild type) rate is  $\lambda_0$ and additional rate change points occur a fraction $\alpha_j$ along branch $j$ and descendent branches have the rate $\lambda_j$ unless there are additional change points in descendant branches.  The effective rate on branches with a change point going from $\lambda_l$ to  $\lambda_j$ is just the weighted average $\alpha_j \lambda_l+(1-\alpha_j)\lambda_j$ where we use a uniform unit interval prior for the $\alpha$'s.
 
@@ -100,7 +100,8 @@ with priors $1/\phi \sim \text{HalfNormal}(0,10)$, $\lambda \sim \mathcal{N}(\La
 \[x_i \sim \text{Beta}(\alpha=p_i/(1-\sum_{j\in A(i)}p_j),\beta=1)\]
 
 where the $p_i$ is an initial approximation of the duration of the branch length expressed as a fraction of the sampling time:
-\[p_i=\text{min}_{j\in D(i)}\left\{(m_j+1)/(\sum_{k\in A(j)}\left(m_k+1\right))\right\}\]
+
+\[ p_i=\text{min}\left(j\in D(i)\right) \frac{m_j+1}{\Sigma_{k\in A(j)}(m_k+1)} \]
 
 Note that the overdispersion parameter is rescaled so that it is comparable across branches with different mutation burden.
 
@@ -114,8 +115,7 @@ where
 
 \[ S_i \sim \text{Beta}\left(\alpha=c,\beta=c(1-s_i)/s_i\right)\]
 
-Where we have chosen the concentration parameter $c=100$. This reflects only modest uncertainty in our estimates in sensitivity and also allows the model to mitigate larger than expected variability in the branch lengths. In other respects the priors are the same as for the Negative Binomial Model.
-
+Where we have chosen the concentration parameter $c=100$. This reflects only modest uncertainty in our estimates in sensitivity and also allows the model to mitigate larger than expected variability in the branch lengths. In other respects the priors are the same as for the Negative Binomial Model.  
 
 ### Examples
 
@@ -149,23 +149,67 @@ plot_tree(ut,cex.label = 0);title("True Ultrametric Tree")
 plot_tree(res$ultratree,cex.label = 0);title("Inferred Tree")
 ```
 
-## Selection Case. Two fitted rates - both the same..
+## Selection Case. 
+
+### Two fitted rates - both the same..
 ```{r}
-NYEARS=40
-RATE=15
-selsim=run_selection_sim(0.1,1/365,target_pop_size = 1e5,nyears_driver_acquisition = 5,nyears = NYEARS,fitness=0.3,minprop = 0.05)
+NYEARS=42
+RATE=20
+set.seed(12345)
+selsim=run_selection_sim(0.1,1/365,target_pop_size = 1e5,nyears_driver_acquisition = 10,nyears = NYEARS,fitness=0.3,minprop = 0.1)
 st=get_subsampled_tree(selsim,30)
 st=get_elapsed_time_tree(st,mutrateperdivision = 0,backgroundrate = RATE/365,odf=1)
 st$agedf=get_agedf_from_sim(st)
 node=st$events$node[which(st$events$driverid==1)]
-res=fit_tree(tree=st,switch_nodes = node,xcross = c(),niter = 10000,model = "poisson_tree",early_growth_model_on = 0.0)
+res=fit_tree(tree=st,switch_nodes = node,xcross = c(-1),niter = 10000,model = "poisson_tree",early_growth_model_on = 0.0)
 print(res$lambda)
 ut=get_elapsed_time_tree(st)
 ut$edge.length=ut$edge.length/365
 par(mfcol=c(1,2))
-plot_tree(ut,cex.label = 0);title("True Ultrametric Tree")
+plot_tree_events(ut,cex.label = 0);title("True Ultrametric Tree")
 plot_tree(res$ultratree,cex.label = 0);title("Inferred Tree")
 ```
 
+### 2 fitted rates - both different
 
+```{r}
+### Reinstate time based tree
+st=get_elapsed_time_tree(st)
+### generate poisson distributed burden based differing rates
+LAMBDA_WT=20
+LAMBDA_MUT=40
+stats=st$events %>% filter(driverid==1) 
+TS=stats$ts/365
+## Convert tree to years
+st$edge.length=st$edge.length/365
+nh=nodeHeights(st)
+## classify branches.
+mutbranches=get_all_node_children(stats$node,st)
+muttrunk=stats$node
+wtbranches=setdiff(st$edge[,2],c(mutbranches,muttrunk))
+## 
+idx=which(st$edge[,2]==muttrunk)
+rates=data.frame(node=c(muttrunk,mutbranches,wtbranches),
+                 rate=c(((TS-nh[idx,1])*LAMBDA_WT+(nh[idx,2]-TS)*LAMBDA_MUT)/(nh[idx,2]-nh[idx,1]),
+                        rep(LAMBDA_MUT,length(mutbranches)),
+                        rep(LAMBDA_WT,length(wtbranches)))
+)
+st$edge.length=rpois(length(st$edge.length),st$edge.length*(data.frame(node=st$edge[,2],duration=st$edge.length) %>% left_join(rates) %>% pull(rate)))
+st$agedf=get_agedf_from_sim(st)
 
+node=muttrunk
+res=fit_tree(tree=st,switch_nodes = node,xcross = c(-1),niter = 10000,model = "poisson_tree",early_growth_model_on = 0.0)
+ut=get_elapsed_time_tree(st)
+ut$edge.length=ut$edge.length/365
+par(mfcol=c(1,2),oma=c(1,1,3,1))
+plot_tree_events(ut,cex.label = 0);title("True Ultrametric Tree")
+plot_tree(res$ultratree)
+mtext("Uniform prior on trunk",outer = TRUE,line=1)
+res=fit_tree(tree=st,switch_nodes = node,xcross = c(0.999),niter = 10000,model = "poisson_tree",early_growth_model_on = 0.0)
+ut=get_elapsed_time_tree(st)
+ut$edge.length=ut$edge.length/365
+par(mfcol=c(1,2),oma=c(1,1,3,1))
+plot_tree_events(ut,cex.label = 0);title("True Ultrametric Tree")
+plot_tree(res$ultratree)
+mtext("Force acquisition to occur towards the end of the trunk",outer = TRUE,line=1)
+```

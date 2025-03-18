@@ -1,6 +1,6 @@
 Package: rtreefit
 Title: Package For Estimating Branch Timings
-Version: 1.0.1
+Version: 1.1.0
 Authors@R: 
     person(given = "Nicholas",
            family = "Williams",
