@@ -9,7 +9,7 @@ require("rstan")
 #' @param b_pool_rates Boolean. Whether to pool the mutant clades specified by switch_nodes and estimate as single mutant mutation rate
 #' @param niter  Number of iterations per chain in stan inference
 #' @param cores Number of cores (and chains) to use in the stan inference.
-#' @pram  split_nodes Nodes to report posterior timings for.
+#' @param  split_nodes Nodes to report posterior timings for.
 #' @param model nb_tree or poisson_tree
 #' @param early_growth_model_on  Numeric. Scaling for early growth model.  If 0 then the model is switched off.
 #' @param stan_control  List. Control list to be passed into rstan::sampling.
@@ -35,7 +35,7 @@ require("rstan")
 #'
 fit_tree=function(tree,
                   switch_nodes,
-                  xcross=NA,
+                  xcross=rep(-1,length(switch_nodes)),
                   b_pool_rates=FALSE,
                   niter=20000,
                   cores=3,
@@ -244,8 +244,19 @@ nbfit_tree_setup_stan_data=function(tree,##<< tree with mutation counts per bran
        lambda_est=lambda_est,# Initial estimate of lambda (used to establish a weak prior)
        nh=mh[xidx[xidx>0],2],# Heights of internal nodes [TODO get rid of redundant xidx>0 criteria ]
        q=q,# Prior for stick breaking fraction.
-       idxcrossover=idxcrossover # index of branches where the lambda change point occurs (excludes wild type)
+       idxcrossover=idxcrossover,#, # index of branches where the lambda change point occurs (excludes wild type)
+       lb_xover=makearray(ifelse(xcross<0,0,0.9999*xcross)),
+       ub_xover=makearray(ifelse(xcross<0,1,xcross+0.0001*(1-xcross)))
+       
   )
+}
+
+makearray=function(x){
+  if(length(x)==1){
+    array(x,dim=1)
+  }else{
+    x
+  }
 }
 
 ##Approximate approach making a tree almost timepoint specific

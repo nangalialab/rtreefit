@@ -110,6 +110,9 @@ data{
   int  idxcrossover[NLAMBDA-1];
   real lambda_est;
   real early_growth_model_on;
+  vector[NLAMBDA-1] lb_xover;
+  vector[NLAMBDA-1] ub_xover;
+  
 }
 
 parameters {
@@ -117,8 +120,13 @@ parameters {
   vector<lower=0.001,upper=0.999>[N] S;
   vector<lower=1,upper=200>[NLAMBDA] lambda;
   real<lower=0.05,upper=0.999> p;  //nb 1/overdispersion
-  real<lower=0,upper=1> x0[NLAMBDA-1]; //fractional crossover..
+  vector<lower=0.00001,upper=0.99999>[NLAMBDA-1] x0_raw; //fractional crossover..
 }
+
+transformed parameters {
+  vector[NLAMBDA-1] x0 = lb_xover + (ub_xover-lb_xover) .* x0_raw;
+}
+
 
 model {
   vector[N] t;
@@ -127,15 +135,15 @@ model {
   vector[N] tmp;
   vector[N] x0v;
   x0v=rep_vector(0.0,N);
-
-  //real t0=0.0;
   x ~ beta(concentration .* q ./ (1-q),concentration);
   S ~ beta(100,100*(1-s) ./ s);
-  x0 ~ uniform(0,1);
+  
   for(i in 1:(NLAMBDA-1)){
+    //print("x0[",i,"]=",x0[i],":lb=",lb_xover[i],":ub=",ub_xover[i]);
     x0v[idxcrossover[i]]=x0[i];
   }
   lambda ~ normal(lambda_est,0.25*lambda_est);
+  
   t=x_to_t(x, parentidx, xidx, tip_min_age, N);
   lambda_per_branch=(1-x0v) .* lambda[rates]+x0v .* lambda[ratesp]+early_growth_model_on*getExtraLambdaRates(t,parentidx,N);
   m ~ poisson(t .* lambda_per_branch .* S);

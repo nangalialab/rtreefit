@@ -7,7 +7,7 @@ using namespace Rcpp ;
 RCPP_MODULE(stan_fit4poisson_tree_mod) {
 
 
-    class_<rstan::stan_fit<stan_model, boost::random::ecuyer1988> >("model_poisson_tree")
+    class_<rstan::stan_fit<stan_model, boost::random::ecuyer1988> >("rstantools_model_poisson_tree")
 
     .constructor<SEXP,SEXP,SEXP>()
 
