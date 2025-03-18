@@ -12,16 +12,6 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-## Installation
-<!-- badges: start -->
-<!-- badges: end -->
-
-You can install rtreefit like so:
-
-``` r
-devtools::install_github("nangalialab/rtreefit",build_vignettes=TRUE)
-```
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library("rtreefit")
