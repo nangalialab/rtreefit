@@ -1,7 +1,4 @@
----
-date: `r format(Sys.Date(), "%d/%m/%Y")`
----
----
+--
 title: "Introduction to rtreefit"
 output: rmarkdown::html_vignette
 description: >
@@ -10,6 +7,10 @@ vignette: >
   %\VignetteIndexEntry{Introduction to rtreefit}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
+---
+
+---
+date: `r format(Sys.Date(), "%d/%m/%Y")`
 ---
 
 ```{r setup, include=FALSE}
