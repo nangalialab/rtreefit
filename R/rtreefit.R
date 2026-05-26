@@ -211,6 +211,15 @@ nbfit_tree_setup_stan_data=function(tree,##<< tree with mutation counts per bran
   #  alpha[match(rate_switch_nodes,tree$edge[,2])]=xcross
   #}
   ##Get approximately ultrametric tree
+  browser()
+  # This will be used for priors - we don't want priors that are systematically too long for early branches
+  # Before 35 mutations molecular time the actual branch length is around 1/11 or what is estimated 
+  tree2$edge.length=ifelse(nh[,1]<35,
+                           ifelse(nh[,2]<=35,
+                                  tree2$edge.length/11,
+                                  (((35-nh[,1])*(1/11)) + ((nh[,2]-35)))*tree2$edge.length/(nh[,2]-nh[,1])),
+                           tree2$edge.length)
+                           
   aut=make_almost_ultrametric(tree2,tip_heights)
   ## prior estimate for t..
   tprior=aut$edge.length/tip_min_age
@@ -226,6 +235,7 @@ nbfit_tree_setup_stan_data=function(tree,##<< tree with mutation counts per bran
     }
     q[i]=tprior[i]/(1-ptot)
   }
+  browser()
   if(length(rate_switch_nodes)<=1){
     idxcrossover=as.array(match(rate_switch_nodes,tree$edge[,2]))
   }else{
@@ -265,7 +275,8 @@ make_almost_ultrametric=function(tree,agedf){
   ## min age  of sampling
   tma=sapply(tree$edge[,2],
              function(x) min(agedf$age[intersect(getDescendants(tree,x),1:length(tree$tip.label))]))
-  tree$edge.length=tree$edge.length+1 ## Add one
+  ##tree$edge.length=tree$edge.length+1 ## Add one
+  tree$edge.length=tree$edge.length+0.01 ## Adding one can overextend the top of the branch when there are lots of coalescences..
   nh=nodeHeights(tree)  ## Cumulative root to branch mutation count
   ## Maximum mutation count of tips that are descendent from each branch
   nha=sapply(tree$edge[,2],function(x) max(nh[match(getDescendants(tree,x),tree$edge[,2]),2]))
