@@ -94,6 +94,8 @@ First lets simulate a neutral tree using rsimpop and fit the tree..
 
 ```{r}
 library("rtreefit")## Loads rsimpop as well
+SEED=37774323
+initSimPop(SEED,bForce = TRUE)
 NYEARS=25
 RATE=18
 get_agedf_from_sim=function(simtree){
