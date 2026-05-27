@@ -211,7 +211,7 @@ nbfit_tree_setup_stan_data=function(tree,##<< tree with mutation counts per bran
   #  alpha[match(rate_switch_nodes,tree$edge[,2])]=xcross
   #}
   ##Get approximately ultrametric tree
-  browser()
+  ##browser()
   # This will be used for priors - we don't want priors that are systematically too long for early branches
   # Before 35 mutations molecular time the actual branch length is around 1/11 or what is estimated 
   tree2$edge.length=ifelse(nh[,1]<35,
