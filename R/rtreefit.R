@@ -235,7 +235,7 @@ nbfit_tree_setup_stan_data=function(tree,##<< tree with mutation counts per bran
     }
     q[i]=tprior[i]/(1-ptot)
   }
-  browser()
+  ##browser()
   if(length(rate_switch_nodes)<=1){
     idxcrossover=as.array(match(rate_switch_nodes,tree$edge[,2]))
   }else{
