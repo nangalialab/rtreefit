@@ -98,7 +98,7 @@ nbfit_tree_stan_mcmc=function(tree,
     nodetdistl=matrix(apply(post.dist$ta,1,function(x){ tmp$edge.length=x;nodeHeights(tmp)[idx.rate.switch,1]}),nrow=length(idx.rate.switch))
     ttmp=apply(nodetdist,1,function(x) quantile(x,prob=c(0.025,0.5,0.975),na.rm=TRUE))
     nodet=list(lb95=ttmp[1,],ub95=ttmp[3,],median=ttmp[2,],mean=apply(nodetdist,1,mean))
-    ttmp=apply(nodetdistl,1,function(x) quantile(x,prob=c(0.025,0.5,0.975,na.rm=TRUE)))
+    ttmp=apply(nodetdistl,1,function(x) quantile(x,prob=c(0.025,0.5,0.975),na.rm=TRUE))
     nodetl=list(lb95=ttmp[1,],ub95=ttmp[3,],median=ttmp[2,],mean=apply(nodetdistl,1,mean))
   }else{
     nodet=NULL
@@ -224,6 +224,9 @@ nbfit_tree_setup_stan_data=function(tree,##<< tree with mutation counts per bran
   ## prior estimate for t..
   tprior=aut$edge.length/tip_min_age
   parentidx=parentidx+1
+  ## The stan models assume each edge's parent edge appears before it in tree$edge (0 = root).
+  stopifnot("tree$edge must list parent edges before child edges - try ape::reorder.phylo(tree, 'cladewise')" =
+              all(parentidx < seq_len(L)))
   q=rep(NA,L)
   ##shape2v=rep(-1,L)
   for(i in 1:L){

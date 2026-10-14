@@ -1,11 +1,11 @@
 functions{
 
-    real x_to_t2(real[] x, int[] parentidx, int[] xidx,real[] tip_min_age, real[] t, int i);
-    //real[] xx_to_t2(real[] x, int[] parentidx, int[] xidx,real[] tip_min_age, real[] t, int i);
+    real x_to_t2(array[] real x, array[] int parentidx, array[] int xidx,array[] real tip_min_age, array[] real t, int i);
+    //array[] real xx_to_t2(array[] real x, array[] int parentidx, array[] int xidx,array[] real tip_min_age, array[] real t, int i);
     //TODO (See above). The following is a transcription of the C code that supported pass-by-reference
     //pass-by-ref is not supported in stan - so we can set each t multiple times. Should be possible to fix
     //by passing back a vector.
-    real x_to_t2(real[] x, int[] parentidx, int[] xidx,real[] tip_min_age, real[] t, int i){
+    real x_to_t2(array[] real x, array[] int parentidx, array[] int xidx,array[] real tip_min_age, array[] real t, int i){
       real factor;
       if(t[i]>=0){
         return t[i];
@@ -38,9 +38,9 @@ functions{
       }
     }
     //Need to make sure all indices are 1+
-      vector x_to_t(real[] x, int[] parentidx, int[] xidx, real[] tip_min_age, int n){
+      vector x_to_t(array[] real x, array[] int parentidx, array[] int xidx, array[] real tip_min_age, int n){
         int N=n;
-        real t[N];
+        array[N] real t;
         for(i in 1:N){
           t[i]=-1;
         }
@@ -54,7 +54,7 @@ functions{
         return ((L/k)*(log(1+exp(k*(b-midpoint)))-log(1+exp(k*(a-midpoint))))) ./ (b-a);
       }
 
-      vector getExtraLambdaRates(vector t,int[] parentidx,int N){
+      vector getExtraLambdaRates(vector t,array[] int parentidx,int N){
         real extralambda=149.1968140;
         real kg=-50.0161248;
         real mp=0.2246393;
@@ -97,17 +97,17 @@ data{
   int N; //num branches
   int NINT; //num internal branches
   int NLAMBDA;
-  int parentidx[N];
-  int xidx[N];
-  real tip_min_age[N];
-  int rates[N];
-  int ratesp[N];
+  array[N] int parentidx;
+  array[N] int xidx;
+  array[N] real tip_min_age;
+  array[N] int rates;
+  array[N] int ratesp;
   vector[N] s; //sensitivity
-  int m[N];
-  int nh[NINT];
+  array[N] int m;
+  array[NINT] int nh;
   vector[NINT] q;
   vector[NINT] concentration;
-  int  idxcrossover[NLAMBDA-1];
+  array[NLAMBDA-1] int idxcrossover;
   real lambda_est;
   real early_growth_model_on;
   vector[NLAMBDA-1] lb_xover;
@@ -116,7 +116,7 @@ data{
 }
 
 parameters {
-  real<lower=0.0001,upper=0.9999> x[NINT];
+  array[NINT] real<lower=0.0001,upper=0.9999> x;
   vector<lower=0.001,upper=0.999>[N] S;
   vector<lower=1,upper=200>[NLAMBDA] lambda;
   real<lower=0.05,upper=0.999> p;  //nb 1/overdispersion

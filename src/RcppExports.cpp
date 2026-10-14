@@ -14,10 +14,12 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 RcppExport SEXP _rcpp_module_boot_stan_fit4nb_tree_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4poisson_tree_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4poisson_tree_fast_mod();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_rcpp_module_boot_stan_fit4nb_tree_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4nb_tree_mod, 0},
     {"_rcpp_module_boot_stan_fit4poisson_tree_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4poisson_tree_mod, 0},
+    {"_rcpp_module_boot_stan_fit4poisson_tree_fast_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4poisson_tree_fast_mod, 0},
     {NULL, NULL, 0}
 };
 
